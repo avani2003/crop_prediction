@@ -245,6 +245,6 @@ if selected == 'Crops Prediction':
             else:
                 crop = 'Soil is not fit for growing crops'
             
-            st.success(f'Predicted Crop: {crop}')
+            st.success(f'Soil is fit to grow {crop}')
         except ValueError:
             st.error("Invalid input. Please provide valid numeric values for all features.")
