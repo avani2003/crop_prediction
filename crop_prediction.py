@@ -184,6 +184,7 @@ import joblib
 import streamlit as st
 import numpy as np
 from streamlit_option_menu import option_menu
+from twilio.rest import Client
 
 # Load the model
 try:
@@ -245,6 +246,34 @@ if selected == 'Crops Prediction':
             else:
                 crop = 'Soil is not fit for growing crops'
             
-            st.success(f'Soil is fit to grow {crop}')
+
+            if crop != 'Soil is not fit for growing crops':
+                # Send SMS using Twilio
+                account_sid = 'AC551a8cdc0a4abb5a2ab2c68c9be0baad'
+                auth_token = '535449503c8b7bf7a8db238338145bed'
+                client = Client(account_sid, auth_token)
+                
+                farmer_phone_number = '+919988635799'  # Replace with the farmer's phone number
+                message = f"Soil is suitable for growing {crop}"
+                
+                try:
+                    sms = client.messages.create(
+                        body=message,
+                        from_="+15855951991",
+                        to=farmer_phone_number
+                    )
+                    # st.success(f"SMS sent to {farmer_phone_number}")
+                except Exception as e:
+                    st.error(f"Phone number is not Registered!!!")
+                # st.success(f'Soil is fit to grow {crop}')
+                st.write(
+                    f'<div style="background-color: darkgreen; padding: 15px; margin-bottom: 20px; border-radius: 5px; color: white;">'
+                    f'Soil is fit to grow {crop}'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+                st.write('<div style="background-color: Red; padding: 15px; border-radius: 5px;">'
+                        '<strong>SMS sent to Farmer\'s phone number</strong>'
+                        '</div>', unsafe_allow_html=True)
         except ValueError:
             st.error("Invalid input. Please provide valid numeric values for all features.")
