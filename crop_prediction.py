@@ -224,7 +224,7 @@ if selected == 'Crops Prediction':
             
     crop = ''
 
-    if st.button('Result Is:'):
+    if st.button('Submit'):
         try:
             input_features = [
                 float(N), float(P), float(K), float(temperature),
