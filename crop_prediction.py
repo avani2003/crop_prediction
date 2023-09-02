@@ -6,7 +6,7 @@ from twilio.rest import Client
 
 # Load the model
 try:
-    model = joblib.load('./SavedModels/model.joblib')
+    model = joblib.load('./SavedModels/fruits.joblib')
 except Exception as e:
     st.error(f"Error loading the model: {e}")
 
@@ -54,10 +54,7 @@ if selected == 'Crops Prediction':
             
             # Map prediction to crop name (as you've done before)
             crop_names = [
-                'Apple', 'Banana', 'Blackgram', 'Chickpea', 'Coconut', 'Coffee', 'Cotton',
-                'Grapes', 'Jute', 'Kidney Beans', 'Lentil', 'Maize', 'Mango', 'Moth Beans',
-                'Mug Beans', 'Musk Melon', 'Orange', 'Papaya', 'Pigeon Peas', 'Pomegranate',
-                'Rice', 'Water Melon'
+                'Apple', 'Banana', 'Coconut', 'Grapes', 'Mango', 'Musk Melon', 'Orange', 'Papaya', 'Pomegranate','Water Melon'
             ]
             if 0 <= crop_prediction[0] < len(crop_names):
                 crop = crop_names[crop_prediction[0]]
