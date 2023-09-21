@@ -37,7 +37,7 @@ fertilizer_recommendations = {
 }
 if selected == 'Crops Recommendation':
     st.title('Crop Recommendation By Using Machine Learning')
-    st.write("**Note: N, P & K are in grams per Hector, Temperature is in Degree Celsius, Humidity in Percentage (%) & Rainfall in Millimeter(mm).**")
+    st.write('<strong style="font-size: 20px;">Note: N, P & K are in grams per Hectare, Temperature is in Degree Celsius, Humidity in Percentage (%) & Rainfall in Millimeter(mm).</strong>',unsafe_allow_html=True)
     
     # Create input fields for user to enter features
     col1, col2, col3 = st.columns(3)
@@ -88,7 +88,7 @@ if selected == 'Crops Recommendation':
                 auth_token = '535449503c8b7bf7a8db238338145bed'
                 client = Client(account_sid, auth_token)
                 
-                farmer_phone_number = '+919988635799'  # Replace with the farmer's phone number
+                farmer_phone_number = '+919988635799'
                 message = f"Soil is suitable for growing {crop}.\n\nFertilizers Recommendation:{fertilizer_recommendation}.\n\nThankyou For Using Our Crop Recommendation System.."
                 
                 try:
@@ -102,19 +102,22 @@ if selected == 'Crops Recommendation':
                     st.error(f"Phone number is not Registered!!!")
                 # st.success(f'Soil is fit to grow {crop}')
                 st.write(
-                    f'<div style="background-color: darkgreen; padding: 15px; margin-bottom: 20px; border-radius: 5px; color: white;">'
-                    f'Soil is fit to grow {crop}'
+                    f'<div style="background-color: black; padding: 15px; margin-bottom: 20px; border-radius: 5px; color: white;">'
+                    f'<strong style="font-size: 18px;">Soil is fit to grow {crop}</strong>'
                     f'</div>',
                     unsafe_allow_html=True
                 )
                 st.write(
-                    f'<div style="background-color: blue; padding: 15px; margin-bottom: 20px; border-radius: 5px; color: white;">'
-                    f'Fertilizers Recommendation: {fertilizer_recommendation}'
+                    f'<div style="background-color: grey; padding: 15px; margin-bottom: 20px; border-radius: 5px; color: white;">'
+                    f'<strong style="font-size: 17px;">Fertilizers Recommendation: {fertilizer_recommendation}</strong>'
                     f'</div>',
                     unsafe_allow_html=True
                 )
-                st.write('<div style="background-color: Red; padding: 15px; border-radius: 5px;">'
-                        '<strong>SMS sent to Farmer\'s phone number</strong>'
-                        '</div>', unsafe_allow_html=True)
+                st.write(
+                '<div style="background-color: Black; padding: 15px; border-radius: 5px; color: white;">'
+                '<strong style="font-size: 18px;">SMS sent to Farmer\'s phone number</strong>'
+                '</div>',
+                unsafe_allow_html=True
+                )
         except ValueError:
             st.error("Invalid input. Please provide valid numeric values for all features.")
