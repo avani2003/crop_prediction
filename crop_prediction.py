@@ -4,9 +4,9 @@ import requests
 from twilio.rest import Client
 
 # Twilio credentials
-TWILIO_ACCOUNT_SID = 'AC2e2464cc7bae4cced73fd05ec9410ccb'
-TWILIO_AUTH_TOKEN = '9de433052b4002efaf95e7ab94c20df8'
-TWILIO_PHONE_NUMBER = '+12568294703'
+TWILIO_ACCOUNT_SID = 'ACd81bfc749c28496c26b3b03dbb62985f'
+TWILIO_AUTH_TOKEN = 'b624d23e2b5af2662ad799064a92b683'
+TWILIO_PHONE_NUMBER = '+16207098293'
 
 # Flask API URL
 FLASK_API_URL = "http://localhost:5000"
