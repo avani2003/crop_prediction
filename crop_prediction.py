@@ -9,7 +9,7 @@ TWILIO_AUTH_TOKEN = '35ae9a9f9ec152ccbbae48c9986fe3fb'
 TWILIO_PHONE_NUMBER = '+12568294703'
 
 # Flask API URL
-FLASK_API_URL = "http://localhost:5000"
+FLASK_API_URL = "https://flaskapp01.azurewebsites.net/"
 
 # Create the Streamlit app
 with st.sidebar:
