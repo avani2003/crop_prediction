@@ -1,43 +1,26 @@
-import joblib
 import streamlit as st
-import numpy as np
 from streamlit_option_menu import option_menu
+import requests
 from twilio.rest import Client
 
-# Load the model
-try:
-    model = joblib.load('./SavedModels/fruits1.joblib')
-except Exception as e:
-    st.error(f"Error loading the model: {e}")
+# Twilio credentials
+TWILIO_ACCOUNT_SID = 'AC2e2464cc7bae4cced73fd05ec9410ccb'
+TWILIO_AUTH_TOKEN = '9de433052b4002efaf95e7ab94c20df8'
+TWILIO_PHONE_NUMBER = '+12568294703'
+
+# Flask API URL
+FLASK_API_URL = "http://localhost:5000"
 
 # Create the Streamlit app
 with st.sidebar:
-    # selected = st.selectbox('Crop Prediction System', ['Crops Prediction'])
     selected = option_menu('Crop Recommendation System',
-                                ['Crops Recommendation'],
-                                icons = ['activity'],
-                                default_index=0)
+                            ['Crops Recommendation'],
+                            icons=['activity'],
+                            default_index=0)
 
-fertilizer_recommendations = {
-    'Apple': 'You can use Urea, Superphosphate, Muriate Of Potash, Zinc Sulfate and Borax for good production of apples.',
-    'Banana': 'You can use NPK fertilizers with high potassium content to promote fruit growth, Ammonium sulfate, Muriate Of Potash, Magnesium Sulfate and Zinc sulfate for good production of bananas.',
-    'Coconut': 'You can use NPK compound fertilizers with high potassium content, Urea, Muriate Of Potash, Dolomite lime and Boron fertilizer for good production of coconuts.',
-    'Dates': 'You can use Urea, Superphosphate, Muriate Of Potash, Epsom salt and Boron for good production of dates.',
-    'Grapes': 'You can use Urea, Superphosphate, Muriate Of Potash, Magnesium Sulfate and Boron for good production of grapes.',
-    'Guava': 'You can use Urea, Superphosphate, Muriate Of Potash, Zinc Sulfate and Borax for good production of guavas',
-    'Litchi': 'You can use Urea, Single Superphosphate, Muriate Of Potash, Zinc Sulphate and Boron for good production of lichi.',
-    'Mango': 'You can use Urea, Single Superphosphate, Muriate Of Potash, Zinc Sulfate and Borax for good production of mango.',
-    'Musk Melon': 'You can use NPK compounds with higher nitrogen and potassium, Urea, Muriate, Calcium Nitrate and Magnesium Sulphate for good production of musk melons.',
-    'Orange': 'You can use Urea, Single Superphosphate, Muriate Of Potash Zinc Sulfate and Chelated Iron for good production of oranges.',
-    'Papaya': 'You can use Urea, Single Superphosphate, Muriate Of Potash, Magnesium Sulphate and Boron for good production of papayas.',
-    'Pomegranate': 'You can use Urea, Single Superphosphate, Muriate Of Potash, Zinc Sulfate and Boron for good production of pomegranates.',
-    'Strawberry': 'You can use Urea, Superphosphate, Muriate Of Potash, Calcium Nitrate and Chelated Iron for good production of strawberries.',
-    'Sugar Cane': 'You can use Urea, Single Superphosphate, Muriate Of Potash and Zinc Sulphate for good production of sugar canes.',
-    'Water Melon': 'You can use NPK compounds with high potassium and phosphorus, Urea, Superphosphate, Muriate Of Potash, Calcium Nitrate, Magnesium Sulphate for good production of water melons.',
-}
 if selected == 'Crops Recommendation':
     st.title('Crop Recommendation By Using Machine Learning')
-    st.write('<strong style="font-size: 20px;">Note: N, P & K are in grams per Hectare, Temperature is in Degree Celsius, Humidity in Percentage (%) & Rainfall in Millimeter(mm).</strong>',unsafe_allow_html=True)
+    st.write("**Note: N, P & K are in grams per Hector, Temperature is in Degree Celsius, Humidity in Percentage (%) & Rainfall in Millimeter(mm).**")
     
     # Create input fields for user to enter features
     col1, col2, col3 = st.columns(3)
@@ -57,67 +40,58 @@ if selected == 'Crops Recommendation':
     with col1:
         rainfall = st.text_input('Rainfall')
             
-    crop = ''
-    fertilizer_recommendation = ''
-
     if st.button('Submit'):
         try:
-            input_features = [
-                float(N), float(P), float(K), float(temperature),
-                float(humidity), float(ph), float(rainfall)
-            ]
+            input_features = {
+                "Nitrogen": float(N),
+                "Phosphorus": float(P),
+                "Potassium": float(K),
+                "Temperature": float(temperature),
+                "Humidity": float(humidity),
+                "Ph": float(ph),
+                "Rainfall": float(rainfall)
+            }
             
-            # Use the loaded model to make predictions
-            crop_prediction = model.predict([input_features])
-            
-            # Map prediction to crop name (as you've done before)
-            crop_names = [
-                'Apple', 'Banana', 'Coconut', 'Dates', 'Grapes', 'Guava', 'Litchi', 'Mango', 'Musk Melon', 'Orange', 'Papaya', 'Pomegranate', 'Strawberry', 'Sugar Cane', 'Water Melon',
-            ]
-            if 0 <= crop_prediction[0] < len(crop_names):
-                crop = crop_names[crop_prediction[0]]
-                fertilizer_recommendation = fertilizer_recommendations.get(crop, 'No specific recommendation available.')
-            else:
-                crop = 'Soil is not fit for growing crops'
-                fertilizer_recommendation = ''
-            
-
-            if crop != 'Soil is not fit for growing crops':
-                # Send SMS using Twilio
-                account_sid = 'AC551a8cdc0a4abb5a2ab2c68c9be0baad'
-                auth_token = '535449503c8b7bf7a8db238338145bed'
-                client = Client(account_sid, auth_token)
+            if float(temperature) > 40:
+                st.warning("⚠️⚠️LOW WATER LEVEL IN YOUR SOIL⚠️⚠️")
                 
-                farmer_phone_number = '+919988635799'
-                message = f"Soil is suitable for growing {crop}.\n\nFertilizers Recommendation:{fertilizer_recommendation}.\n\nThankyou For Using Our Crop Recommendation System.."
-                
-                try:
-                    sms = client.messages.create(
-                        body=message,
-                        from_="+15855951991",
-                        to=farmer_phone_number
+                client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+                farmer_phone_number = '+918567098852'
+                message = f"Attention: ⚠️⚠️LOW WATER LEVEL IN YOUR SOIL⚠️⚠️"
+                client.messages.create(body=message, from_=TWILIO_PHONE_NUMBER, to=farmer_phone_number)
+            
+            try:
+                response = requests.post(FLASK_API_URL, json=input_features)
+                if response.status_code == 200:
+                    result = response.json()
+                    crop = result.get("prediction")
+                    # fertilizer_recommendation = result.get("fertilizer_recommendation")
+                    
+                    st.write(
+                        f'<div style="background-color: black; padding: 15px; margin-bottom: 20px; border-radius: 5px; color: white; font-size: 20px;">'
+                        f'Soil is fit to grow {crop}'
+                        f'</div>',
+                        unsafe_allow_html=True
                     )
-                    # st.success(f"SMS sent to {farmer_phone_number}")
-                except Exception as e:
-                    st.error(f"Phone number is not Registered!!!")
-                # st.success(f'Soil is fit to grow {crop}')
-                st.write(
-                    f'<div style="background-color: black; padding: 15px; margin-bottom: 20px; border-radius: 5px; color: white;">'
-                    f'<strong style="font-size: 18px;">Soil is fit to grow {crop}</strong>'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
-                st.write(
-                    f'<div style="background-color: grey; padding: 15px; margin-bottom: 20px; border-radius: 5px; color: white;">'
-                    f'<strong style="font-size: 17px;">Fertilizers Recommendation: {fertilizer_recommendation}</strong>'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
-                st.write(
-                '<div style="background-color: Black; padding: 15px; border-radius: 5px; color: white;">'
-                '<strong style="font-size: 18px;">SMS sent to Farmer\'s phone number</strong>'
-                '</div>',
-                unsafe_allow_html=True
-                )
+                    # st.write(
+                    #     f'<div style="background-color: blue; padding: 15px; margin-bottom: 20px; border-radius: 5px; color: white;">'
+                    #     f'Fertilizers Recommendation: {fertilizer_recommendation}'
+                    #     f'</div>',
+                    #     unsafe_allow_html=True
+                    # )
+                    
+                    # Send SMS using Twilio
+                    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+                    farmer_phone_number = '+918567098852'
+                    message = f"Soil is suitable for growing {crop}.\n\nThank you for using our crop recommendation system."
+                    client.messages.create(body=message, from_=TWILIO_PHONE_NUMBER, to=farmer_phone_number)
+
+                    # st.write('<div style="background-color: black; padding: 15px; border-radius: 5px; color: white; font-size: 20px;">'
+                    #         '<strong>SMS sent to Farmer\'s phone number</strong>'
+                    #         '</div>', unsafe_allow_html=True)
+                else:
+                    st.error("Failed to get prediction from the server.")
+            except requests.exceptions.ConnectionError:
+                st.error("Error: Unable to connect to the server. Please make sure the server is running.")
         except ValueError:
             st.error("Invalid input. Please provide valid numeric values for all features.")
