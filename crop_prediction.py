@@ -2,14 +2,19 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import requests
 from twilio.rest import Client
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
 
 # Twilio credentials
-TWILIO_ACCOUNT_SID = 'AC2e2464cc7bae4cced73fd05ec9410ccb'
-TWILIO_AUTH_TOKEN = '35ae9a9f9ec152ccbbae48c9986fe3fb'
-TWILIO_PHONE_NUMBER = '+12568294703'
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID', None)
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 
 # Flask API URL
-FLASK_API_URL = "https://flaskapp01.azurewebsites.net/"
+FLASK_API_URL = os.getenv('FLASK_API_URL')
 
 # Create the Streamlit app
 with st.sidebar:
@@ -51,6 +56,8 @@ if selected == 'Crops Recommendation':
                 "Ph": float(ph),
                 "Rainfall": float(rainfall)
             }
+            
+            print("Input features:", input_features)
             
             if float(temperature) > 40:
                 st.warning("⚠️⚠️LOW WATER LEVEL IN YOUR SOIL⚠️⚠️")
